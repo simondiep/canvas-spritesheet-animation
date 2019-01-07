@@ -1,0 +1,98 @@
+<html>
+  <head>
+    <script>
+      let canvas;
+      let context;
+      const animations = [];
+
+      window.onload = function() {
+        canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 480;
+        document.body.appendChild(canvas);
+        context = canvas.getContext('2d');
+
+        initializeAnimations();
+        animationLoop();
+      }
+
+      // Must be done after images are loaded into the DOM
+      function initializeAnimations() {
+        const normalCoinAnimation = {
+          image: coinImage,
+          canvasOffsetX: 0,
+          canvasOffsetY: 0,
+          numberOfSprites: 10,
+          ticksPerSprite: 4,
+          tickCount: 0,
+          spriteIndex: 0,
+        }
+        animations.push(normalCoinAnimation);
+
+        const slowCoinAnimation = {
+          image: coinImage,
+          canvasOffsetX: 200,
+          canvasOffsetY: 100,
+          numberOfSprites: 10,
+          ticksPerSprite: 6,
+          tickCount: 0,
+          spriteIndex: 0,
+        }
+        animations.push(slowCoinAnimation);
+
+        const fastCoinAnimation = {
+          image: coinImage,
+          canvasOffsetX: 50,
+          canvasOffsetY: 300,
+          numberOfSprites: 10,
+          ticksPerSprite: 1,
+          tickCount: 0,
+          spriteIndex: 0,
+        }
+        animations.push(fastCoinAnimation);
+      }
+
+      function animationLoop() {
+        window.requestAnimationFrame(animationLoop);
+        for (let animation of animations) {
+          renderAnimation(animation);
+          // After rendering, update animation objects for next render
+          updateAnimation(animation);
+        }
+      }
+
+      function renderAnimation(animation) {
+        context.clearRect(animation.canvasOffsetX, animation.canvasOffsetY, animation.image.width, animation.image.height);
+
+        context.drawImage(
+          animation.image,
+          animation.spriteIndex * animation.image.width / animation.numberOfSprites,
+          0,
+          animation.image.width / animation.numberOfSprites,
+          animation.image.height,
+          animation.canvasOffsetX,
+          animation.canvasOffsetY,
+          animation.image.width / animation.numberOfSprites,
+          animation.image.height);
+      }
+
+      // Determine which sprite of a spritesheet to display based on how long a sprite has been displayed
+      function updateAnimation(animation) {
+        animation.tickCount += 1;
+        if (animation.tickCount > animation.ticksPerSprite) {
+          animation.tickCount = 0;
+          if (animation.spriteIndex < animation.numberOfSprites - 1) {
+              animation.spriteIndex += 1;
+          } else {
+              animation.spriteIndex = 0;
+          }
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="static-assets" style="display:none;">
+      <img id="coinImage" src="coin-sprite-animation.png"/>
+    </div>
+  </body>
+</html>
